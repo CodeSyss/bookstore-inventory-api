@@ -1,0 +1,45 @@
+<section class="page narrow">
+  <a matButton [routerLink]="backLink()" class="back">
+    <mat-icon>arrow_back</mat-icon>
+    {{ isEdit() ? 'Volver al detalle' : 'Volver al inventario' }}
+  </a>
+
+  <header class="page-header">
+    <div>
+      <h1>{{ isEdit() ? 'Editar libro' : 'Nuevo libro' }}</h1>
+      <p>
+        {{
+          isEdit()
+            ? 'Actualiza los datos del libro. Todos los campos son obligatorios.'
+            : 'Completa los datos para registrar un libro en el inventario.'
+        }}
+      </p>
+    </div>
+  </header>
+
+  @if (notFound()) {
+    <app-empty-state
+      icon="search_off"
+      title="Libro no encontrado"
+      description="El libro que intentas editar no existe o fue eliminado."
+    >
+      <a matButton="filled" routerLink="/books">Ir al inventario</a>
+    </app-empty-state>
+  } @else if (isEdit() && !book()) {
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate" aria-label="Cargando libro" />
+    }
+  } @else {
+    <mat-card appearance="outlined">
+      <mat-card-content class="card-content">
+        <app-book-form
+          [book]="book()"
+          [saving]="saving()"
+          [serverErrors]="serverErrors()"
+          (save)="save($event)"
+          (cancelled)="cancel()"
+        />
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

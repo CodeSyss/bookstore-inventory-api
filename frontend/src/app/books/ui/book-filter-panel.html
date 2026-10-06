@@ -1,0 +1,55 @@
+<form class="panel" [formGroup]="form" (ngSubmit)="apply()" role="search" aria-label="Filtros del inventario">
+  <mat-button-toggle-group
+    class="modes"
+    aria-label="Tipo de filtro"
+    hideSingleSelectionIndicator
+    [value]="mode()"
+    (change)="onModeChange($event.value)"
+  >
+    <mat-button-toggle value="all">Todos</mat-button-toggle>
+    <mat-button-toggle value="category">Por categoría</mat-button-toggle>
+    <mat-button-toggle value="low-stock">Stock bajo</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @switch (mode()) {
+    @case ('category') {
+      <mat-form-field class="field" subscriptSizing="dynamic">
+        <mat-label>Categoría</mat-label>
+        <mat-icon matPrefix aria-hidden="true">category</mat-icon>
+        <input
+          matInput
+          type="search"
+          formControlName="category"
+          [maxlength]="categoryMaxLength"
+          placeholder="Ej.: Novela"
+          autocomplete="off"
+        />
+        <mat-hint>Coincidencia exacta, sin distinguir mayúsculas</mat-hint>
+        <mat-error>Ingresa una categoría para buscar.</mat-error>
+      </mat-form-field>
+      <button matButton="filled" type="submit">
+        <mat-icon>search</mat-icon>
+        Buscar
+      </button>
+    }
+    @case ('low-stock') {
+      <mat-form-field class="field narrow" subscriptSizing="dynamic">
+        <mat-label>Umbral de stock</mat-label>
+        <input matInput type="number" min="0" step="1" inputmode="numeric" formControlName="threshold" />
+        <mat-hint>Libros con stock menor o igual</mat-hint>
+        <mat-error>Ingresa un número entero mayor o igual a 0.</mat-error>
+      </mat-form-field>
+      <button matButton="filled" type="submit">
+        <mat-icon>filter_alt</mat-icon>
+        Aplicar
+      </button>
+    }
+  }
+
+  @if (filter().kind !== 'all') {
+    <button matButton type="button" class="clear" (click)="clear()">
+      <mat-icon>filter_alt_off</mat-icon>
+      Quitar filtro
+    </button>
+  }
+</form>

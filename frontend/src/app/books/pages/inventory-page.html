@@ -1,0 +1,75 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Inventario</h1>
+      <p aria-live="polite">{{ store.hasLoaded() ? summary() : 'Catálogo de libros' }}</p>
+    </div>
+    <a matButton="filled" routerLink="/books/new">
+      <mat-icon>add</mat-icon>
+      Nuevo libro
+    </a>
+  </header>
+
+  <app-book-filter-panel [filter]="store.filter()" (filterChange)="applyFilter($event)" />
+
+  <div class="results" [attr.aria-busy]="store.loading()">
+    <mat-progress-bar class="progress" [class.visible]="store.loading()" mode="indeterminate" aria-label="Cargando libros" />
+
+    @if (store.loadError(); as error) {
+      <app-empty-state icon="cloud_off" title="No se pudo cargar el inventario" [description]="error.message">
+        <button matButton="filled" type="button" (click)="reload()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </app-empty-state>
+    } @else if (!store.hasLoaded()) {
+      <p class="loading-note">Cargando inventario…</p>
+    } @else if (store.isEmpty()) {
+      @if (store.isFiltered()) {
+        <app-empty-state
+          icon="search_off"
+          title="Sin resultados"
+          description="Ningún libro coincide con el filtro seleccionado. Prueba con otra categoría o ajusta el umbral de stock."
+        >
+          <button matButton="tonal" type="button" (click)="clearFilter()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Quitar filtro
+          </button>
+        </app-empty-state>
+      } @else {
+        <app-empty-state
+          icon="menu_book"
+          title="Aún no hay libros en el inventario"
+          description="Agrega el primer libro para empezar a gestionar tu catálogo."
+        >
+          <a matButton="filled" routerLink="/books/new">
+            <mat-icon>add</mat-icon>
+            Agregar libro
+          </a>
+        </app-empty-state>
+      }
+    } @else {
+      <app-book-list
+        [books]="store.items()"
+        [currency]="store.localCurrency()"
+        [calculatingIds]="store.calculatingIds()"
+        [deletingIds]="store.deletingIds()"
+        [busy]="store.loading()"
+        (calculate)="calculatePrice($event)"
+        (view)="openDetail($event)"
+        (edit)="openEdit($event)"
+        (remove)="remove($event)"
+      />
+      <mat-paginator
+        [length]="store.total()"
+        [pageSize]="store.pageSize"
+        [pageIndex]="store.pageIndex()"
+        [hidePageSize]="true"
+        [showFirstLastButtons]="true"
+        [disabled]="store.loading()"
+        aria-label="Paginación del inventario"
+        (page)="changePage($event)"
+      />
+    }
+  </div>
+</section>

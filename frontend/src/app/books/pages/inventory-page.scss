@@ -1,0 +1,25 @@
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 240px;
+}
+
+.progress {
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.loading-note {
+  margin: 24px 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+mat-paginator {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+}

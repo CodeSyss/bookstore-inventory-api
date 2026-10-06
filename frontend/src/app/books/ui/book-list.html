@@ -1,0 +1,115 @@
+@if (narrow()) {
+  <ul class="cards" [class.busy]="busy()" aria-label="Libros del inventario">
+    @for (book of books(); track book.id) {
+      <li>
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>{{ book.title }}</mat-card-title>
+            <mat-card-subtitle>{{ book.author }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <dl class="facts">
+              <div>
+                <dt>ISBN</dt>
+                <dd>{{ book.isbn }}</dd>
+              </div>
+              <div>
+                <dt>Categoría</dt>
+                <dd>{{ book.category }}</dd>
+              </div>
+              <div>
+                <dt>Costo (USD)</dt>
+                <dd>{{ book.costUsd | currency: 'USD' : 'symbol' : '1.2-2' }}</dd>
+              </div>
+              <div>
+                <dt>Precio de venta</dt>
+                <dd>
+                  @if (book.sellingPriceLocal !== null) {
+                    <strong>{{ book.sellingPriceLocal | currency: currency() : 'symbol' : '1.2-2' }}</strong>
+                  } @else {
+                    <span class="muted">Sin calcular</span>
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>Stock</dt>
+                <dd><app-stock-badge [quantity]="book.stockQuantity" /></dd>
+              </div>
+            </dl>
+          </mat-card-content>
+          <mat-card-actions>
+            <app-book-row-actions
+              variant="card"
+              [calculating]="calculatingIds().has(book.id)"
+              [deleting]="deletingIds().has(book.id)"
+              (calculate)="calculate.emit(book)"
+              (view)="view.emit(book)"
+              (edit)="edit.emit(book)"
+              (remove)="remove.emit(book)"
+            />
+          </mat-card-actions>
+        </mat-card>
+      </li>
+    }
+  </ul>
+} @else {
+  <div class="table-wrapper" [class.busy]="busy()">
+    <table mat-table [dataSource]="books()" [trackBy]="trackById" aria-label="Libros del inventario">
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>Título</th>
+        <td mat-cell *matCellDef="let book">
+          <div class="title">{{ book.title }}</div>
+          <div class="muted">{{ book.author }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isbn">
+        <th mat-header-cell *matHeaderCellDef>ISBN</th>
+        <td mat-cell *matCellDef="let book" class="nowrap">{{ book.isbn }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Categoría</th>
+        <td mat-cell *matCellDef="let book">{{ book.category }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cost">
+        <th mat-header-cell *matHeaderCellDef class="numeric">Costo (USD)</th>
+        <td mat-cell *matCellDef="let book" class="numeric">{{ book.costUsd | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef class="numeric">Precio de venta</th>
+        <td mat-cell *matCellDef="let book" class="numeric">
+          @if (book.sellingPriceLocal !== null) {
+            <strong>{{ book.sellingPriceLocal | currency: currency() : 'symbol' : '1.2-2' }}</strong>
+          } @else {
+            <span class="muted">Sin calcular</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let book"><app-stock-badge [quantity]="book.stockQuantity" /></td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header"><span class="visually-hidden">Acciones</span></th>
+        <td mat-cell *matCellDef="let book" class="actions-cell">
+          <app-book-row-actions
+            [calculating]="calculatingIds().has(book.id)"
+            [deleting]="deletingIds().has(book.id)"
+            (calculate)="calculate.emit(book)"
+            (view)="view.emit(book)"
+            (edit)="edit.emit(book)"
+            (remove)="remove.emit(book)"
+          />
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </div>
+}

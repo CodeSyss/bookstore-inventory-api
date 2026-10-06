@@ -1,0 +1,86 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (formErrors().length > 0) {
+    <div class="form-errors" role="alert">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      <ul>
+        @for (message of formErrors(); track message) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <div class="grid">
+    <mat-form-field class="span-2">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="title" [maxlength]="limits.title" autocomplete="off" />
+      <mat-error>{{ errorMessage(form.controls.title) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="span-2">
+      <mat-label>Autor</mat-label>
+      <input matInput formControlName="author" [maxlength]="limits.author" autocomplete="off" />
+      <mat-error>{{ errorMessage(form.controls.author) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>ISBN</mat-label>
+      <input
+        matInput
+        formControlName="isbn"
+        [maxlength]="limits.isbn"
+        placeholder="978-84-376-0494-7"
+        autocomplete="off"
+        inputmode="text"
+      />
+      <mat-hint>10 o 13 dígitos; guiones opcionales</mat-hint>
+      <mat-error>{{ errorMessage(form.controls.isbn) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Costo (USD)</mat-label>
+      <span matTextPrefix>US$&nbsp;</span>
+      <input matInput type="number" formControlName="costUsd" min="0.01" step="0.01" inputmode="decimal" />
+      <mat-hint>Mayor que 0, hasta 2 decimales</mat-hint>
+      <mat-error>{{ errorMessage(form.controls.costUsd) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Cantidad en stock</mat-label>
+      <input matInput type="number" formControlName="stockQuantity" min="0" step="1" inputmode="numeric" />
+      <mat-error>{{ errorMessage(form.controls.stockQuantity) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Categoría</mat-label>
+      <input matInput formControlName="category" [maxlength]="limits.category" autocomplete="off" />
+      <mat-error>{{ errorMessage(form.controls.category) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>País del proveedor</mat-label>
+      <input
+        matInput
+        formControlName="supplierCountry"
+        [maxlength]="limits.supplierCountry"
+        placeholder="US"
+        autocomplete="off"
+        class="uppercase"
+      />
+      <mat-hint>Código de 2 letras</mat-hint>
+      <mat-error>{{ errorMessage(form.controls.supplierCountry) }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="actions">
+    <button matButton type="button" [disabled]="saving()" (click)="cancelled.emit()">Cancelar</button>
+    <button matButton="filled" type="submit" [disabled]="saving()" [attr.aria-busy]="saving()">
+      @if (saving()) {
+        <mat-progress-spinner mode="indeterminate" diameter="18" aria-label="Guardando" />
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      {{ book() ? 'Guardar cambios' : 'Crear libro' }}
+    </button>
+  </div>
+</form>

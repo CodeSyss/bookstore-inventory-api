@@ -1,0 +1,112 @@
+<section class="page">
+  <a matButton routerLink="/books" class="back">
+    <mat-icon>arrow_back</mat-icon>
+    Volver al inventario
+  </a>
+
+  @if (store.currentLoading() && !currentBook()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Cargando libro" />
+  }
+
+  @if (notFound()) {
+    <app-empty-state
+      icon="search_off"
+      title="Libro no encontrado"
+      description="El libro que buscas no existe o fue eliminado."
+    >
+      <a matButton="filled" routerLink="/books">Ir al inventario</a>
+    </app-empty-state>
+  } @else if (currentBook(); as book) {
+    <header class="page-header">
+      <div>
+        <h1>{{ book.title }}</h1>
+        <p>{{ book.author }}</p>
+      </div>
+      <div class="header-actions">
+        <a matButton="outlined" [routerLink]="['/books', book.id, 'edit']" [class.disabled]="deleting()">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </a>
+        <button matButton="outlined" class="danger" type="button" [disabled]="deleting() || calculating()" (click)="remove()">
+          <mat-icon>delete</mat-icon>
+          Eliminar
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Información del libro</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="facts">
+            <div>
+              <dt>ISBN</dt>
+              <dd>{{ book.isbn }}</dd>
+            </div>
+            <div>
+              <dt>Categoría</dt>
+              <dd>{{ book.category }}</dd>
+            </div>
+            <div>
+              <dt>País del proveedor</dt>
+              <dd>{{ book.supplierCountry }}</dd>
+            </div>
+            <div>
+              <dt>Stock</dt>
+              <dd><app-stock-badge [quantity]="book.stockQuantity" /></dd>
+            </div>
+            <div>
+              <dt>Costo (USD)</dt>
+              <dd>{{ book.costUsd | currency: 'USD' : 'symbol' : '1.2-2' }}</dd>
+            </div>
+            <div>
+              <dt>Precio de venta</dt>
+              <dd>
+                @if (book.sellingPriceLocal !== null) {
+                  <strong class="price">{{ book.sellingPriceLocal | currency: store.localCurrency() : 'symbol' : '1.2-2' }}</strong>
+                } @else {
+                  <span class="muted">Sin calcular</span>
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>Creado</dt>
+              <dd>{{ book.createdAt | date: 'medium' }}</dd>
+            </div>
+            <div>
+              <dt>Actualizado</dt>
+              <dd>{{ book.updatedAt | date: 'medium' }}</dd>
+            </div>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Cálculo de precio</mat-card-title>
+          <mat-card-subtitle>Convierte el costo en USD a moneda local y aplica el margen</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          @if (calculation(); as calc) {
+            <app-price-breakdown [calculation]="calc" />
+          } @else {
+            <p class="muted hint">Aún no has calculado el precio de venta en esta sesión.</p>
+          }
+        </mat-card-content>
+        <mat-card-actions>
+          <app-loading-button
+            label="Calcular precio de venta"
+            loadingLabel="Calculando…"
+            icon="calculate"
+            appearance="filled"
+            [loading]="calculating()"
+            [disabled]="deleting()"
+            (pressed)="calculatePrice()"
+          />
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+</section>

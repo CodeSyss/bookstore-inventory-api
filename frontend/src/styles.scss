@@ -1,0 +1,83 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+/* Page-level layout helpers shared by all feature pages. */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h1 {
+    font: var(--mat-sys-headline-medium);
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* Snackbar variants used by NotificationService. */
+.snackbar-success {
+  --mat-snack-bar-container-color: var(--mat-sys-tertiary-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-tertiary-container);
+  --mat-snack-bar-button-color: var(--mat-sys-on-tertiary-container);
+}
+
+.snackbar-error {
+  --mat-snack-bar-container-color: var(--mat-sys-error-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-error-container);
+  --mat-snack-bar-button-color: var(--mat-sys-on-error-container);
+}
+
+.snackbar-warning {
+  --mat-snack-bar-container-color: var(--mat-sys-secondary-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-secondary-container);
+  --mat-snack-bar-button-color: var(--mat-sys-on-secondary-container);
+}

@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 16px;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface);
+}
+
+.modes {
+  align-self: center;
+}
+
+.field {
+  flex: 1 1 260px;
+  max-width: 420px;
+
+  &.narrow {
+    flex-basis: 200px;
+    max-width: 240px;
+  }
+}
+
+button[type='submit'] {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+.clear {
+  align-self: center;
+  margin-left: auto;
+}
