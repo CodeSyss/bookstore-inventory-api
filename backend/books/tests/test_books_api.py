@@ -74,6 +74,11 @@ class TestCrud:
         r = client.get("/books/999")
         assert r.status_code == 404
         assert r.json()["error"] == "not_found"
+        assert r.json()["message"] == "No se encontró el recurso solicitado."
+
+    def test_builtin_validation_messages_are_spanish(self, client):
+        r = client.post("/books", {**VALID, "cost_usd": "0"}, format="json")
+        assert r.json()["details"]["cost_usd"] == ["Asegúrese de que este valor es mayor o igual a 0.01."]
 
     def test_update_same_isbn_and_delete(self, client, book):
         r = client.put(f"/books/{book.id}", {**VALID, "stock_quantity": 3}, format="json")
@@ -113,6 +118,8 @@ class TestCalculatePrice:
         assert body["rate_source"] == "live"
         book.refresh_from_db()
         assert book.selling_price_local == Decimal("19.03")
+        # The calculation timestamp is the persisted update time of the book.
+        assert client.get(f"/books/{book.id}").json()["updated_at"] == body["calculation_timestamp"]
 
     @patch("books.services.exchange_rate.requests.get", side_effect=requests.ConnectionError)
     def test_fallback_rate_when_api_down(self, _, client, book):

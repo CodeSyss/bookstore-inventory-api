@@ -1,7 +1,6 @@
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.conf import settings
-from django.utils import timezone
 
 from books.models import Book
 
@@ -30,5 +29,6 @@ def calculate_selling_price(book: Book) -> dict:
         "selling_price_local": selling_price,
         "currency": currency,
         "rate_source": source,
-        "calculation_timestamp": timezone.now(),
+        # Same instant persisted in updated_at, so clients can sync the book without refetching.
+        "calculation_timestamp": book.updated_at,
     }
